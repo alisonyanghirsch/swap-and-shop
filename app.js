@@ -494,7 +494,7 @@
                 assignedDesigner: cell(13),
                 status: cell(14) || "In Inventory",
                 priceHkd: cell(15),
-                suggestedPrice: cell(18),
+                suggestedPrice: cell(17),
               };
             })
             .filter(Boolean);
