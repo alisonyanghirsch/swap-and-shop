@@ -21,8 +21,8 @@
           </svg>
         </div>
         <div>
-          <div class="brand-kicker">Swap &amp; Shop Club</div>
-          <h1 class="brand-title">Community Clothing Catalog</h1>
+          <div class="brand-kicker">Student Thrift &amp; Upcycle</div>
+          <h1 class="brand-title">Swap &amp; Shop</h1>
         </div>
       </div>
 
@@ -38,19 +38,19 @@
           </div>
           <div class="stat-pill stat-pill-mustard">
             <span class="stat-value" id="stat-claimed">0</span>
-            <span class="stat-label">In Upcycling</span>
+            <span class="stat-label">Being Upcycled</span>
           </div>
         </div>
-        <div class="sync-badge" id="sync-status" title="Inventory data status">
+        <div class="sync-badge" id="sync-status" hidden title="Inventory data status">
           <span class="sync-dot"></span>
-          <span id="sync-status-text">Loading catalog...</span>
+          <span id="sync-status-text">Loading...</span>
         </div>
       </div>
     </header>
 
     <nav class="mode-tabs" role="tablist" aria-label="Catalog views">
       <button class="mode-tab active" role="tab" aria-selected="true" data-mode="shop">
-        <span class="tab-title">Shop Available</span>
+        <span class="tab-title">Shop Drop</span>
         <span class="tab-count" id="tab-count-shop">0</span>
       </button>
       <button class="mode-tab" role="tab" aria-selected="false" data-mode="upcycle">
@@ -58,7 +58,7 @@
         <span class="tab-count" id="tab-count-upcycle">0</span>
       </button>
       <button class="mode-tab" role="tab" aria-selected="false" data-mode="claimed">
-        <span class="tab-title">Claimed &amp; In Progress</span>
+        <span class="tab-title">Being Upcycled</span>
         <span class="tab-count" id="tab-count-claimed">0</span>
       </button>
     </nav>
@@ -94,6 +94,16 @@
         <button type="button" class="btn-reset" id="btn-reset-filters" hidden>Clear</button>
       </div>
     </section>
+
+    <div class="vibe-bar" id="style-bar" aria-label="Quick style filter">
+      <button type="button" class="vibe-pill active" data-style="">All Styles</button>
+      <button type="button" class="vibe-pill" data-style="branded">Branded Finds</button>
+      <button type="button" class="vibe-pill" data-style="graphic">Graphic Tees</button>
+      <button type="button" class="vibe-pill" data-style="knit">Sweaters &amp; Knits</button>
+      <button type="button" class="vibe-pill" data-style="tank">Tanks &amp; Camis</button>
+      <button type="button" class="vibe-pill" data-style="shirt">Button-Ups &amp; Blouses</button>
+      <button type="button" class="vibe-pill" data-style="polo">Polos</button>
+    </div>
 
     <div class="swatch-bar" id="swatch-bar" aria-label="Quick color filter">
       <button type="button" class="swatch-pill active" data-swatch="">All</button>

@@ -8,6 +8,7 @@
     category: "",
     color: "",
     swatch: "",
+    style: "",
     condition: "",
     size: "",
     sort: "featured",
@@ -64,6 +65,7 @@
     lightbox: document.getElementById("photo-lightbox"),
     lightboxImg: document.getElementById("lightbox-img"),
     lightboxClose: document.getElementById("lightbox-close"),
+    styleBar: document.getElementById("style-bar"),
     swatchBar: document.getElementById("swatch-bar"),
     inlineForm: document.getElementById("inline-request-form"),
     inlineFormTitle: document.getElementById("inline-form-title"),
@@ -128,7 +130,7 @@
     }
     const sug = String(item.suggestedPrice || "").trim();
     if (sug) {
-      return { text: `Est. ${sug}`, isEstimated: true };
+      return { text: sug, isEstimated: true };
     }
     return { text: "Price TBD", isEstimated: true };
   }
@@ -153,9 +155,24 @@
       .replace(/"/g, "&quot;");
   }
 
-  function setSyncStatus(text, isLive) {
+  function matchesStyle(item, styleKey) {
+    if (!styleKey) return true;
+    const desc = (item.description || "").toLowerCase();
+    const mat = (item.material || "").toLowerCase();
+    const brand = (item.brand || "").trim();
+    if (styleKey === "branded") return Boolean(brand) && !brand.toLowerCase().includes("(est.)");
+    if (styleKey === "graphic") return /graphic|print|logo|crest|script|butterfly|snoopy|dog|goose|wave|cat|research|alfa|champion|storefront|feather|palm/.test(desc);
+    if (styleKey === "knit") return /sweater|knit|waffle|henley/.test(desc) || /knit/.test(mat);
+    if (styleKey === "tank") return /tank|camisole|sleeveless|racerback/.test(desc);
+    if (styleKey === "shirt") return /button|blouse|dress shirt|collared|plaid|mandarin/.test(desc);
+    if (styleKey === "polo") return /polo/.test(desc);
+    return true;
+  }
+
+  function setSyncStatus(text, isLive, showError) {
     els.syncStatusText.textContent = text;
     els.syncStatus.classList.toggle("is-live", Boolean(isLive));
+    els.syncStatus.hidden = !showError;
   }
 
   function populateFilterOptions() {
@@ -210,6 +227,7 @@
         const allowed = SWATCH_GROUPS[state.swatch] || [];
         if (!allowed.includes((item.color || "").toLowerCase())) return false;
       }
+      if (state.style && !matchesStyle(item, state.style)) return false;
       if (state.condition && item.condition !== state.condition) return false;
       if (state.size && item.size !== state.size) return false;
 
@@ -256,19 +274,19 @@
     els.modeBanner.classList.toggle("is-upcycle", isUpcycle);
     if (state.mode === "shop") {
       els.modeBannerText.textContent =
-        "Browse available clothes. Prices marked \"Est.\" show suggested pocket-money ranges until finalized. Click any piece to reserve or ask about it.";
+        "Student-run thrift drop. Pocket-money prices shown below are suggested ranges until finalized. Tap any piece to zoom in, reserve, or ask about sizing.";
     } else if (state.mode === "upcycle") {
       els.modeBannerText.textContent =
-        "For student upcyclers: explore garments with high redesign potential, check the design ideas, and click \"Claim for Upcycle\" to reserve a piece for your project.";
+        "Upcycle Studio: browse blanks and statement bases, check the redesign ideas, and tap \"Claim for Upcycle\" to reserve a piece for your project.";
     } else {
       els.modeBannerText.textContent =
-        "Pieces currently claimed by student designers for upcycling. Once reworked, re-photographed, and repriced, they return to Shop Available.";
+        "Pieces currently being reworked by student designers. Once upcycled, re-photographed, and repriced, they drop back into Shop Drop.";
     }
   }
 
   function renderGrid() {
     const items = getFilteredItems();
-    const hasFilters = Boolean(state.search || state.category || state.color || state.swatch || state.condition || state.size);
+    const hasFilters = Boolean(state.search || state.category || state.color || state.swatch || state.style || state.condition || state.size);
     els.resetBtn.hidden = !hasFilters;
     els.resultsCount.textContent = `Showing ${items.length} ${items.length === 1 ? "item" : "items"}`;
 
@@ -580,6 +598,13 @@
       }
       renderGrid();
     });
+    els.styleBar.addEventListener("click", (e) => {
+      const pill = e.target.closest(".vibe-pill");
+      if (!pill) return;
+      state.style = pill.dataset.style;
+      els.styleBar.querySelectorAll(".vibe-pill").forEach((p) => p.classList.toggle("active", p === pill));
+      renderGrid();
+    });
     els.swatchBar.addEventListener("click", (e) => {
       const pill = e.target.closest(".swatch-pill");
       if (!pill) return;
@@ -609,6 +634,7 @@
       state.category = "";
       state.color = "";
       state.swatch = "";
+      state.style = "";
       state.condition = "";
       state.size = "";
       els.search.value = "";
@@ -616,6 +642,7 @@
       els.color.value = "";
       els.condition.value = "";
       els.size.value = "";
+      els.styleBar.querySelectorAll(".vibe-pill").forEach((p) => p.classList.toggle("active", p.dataset.style === ""));
       els.swatchBar.querySelectorAll(".swatch-pill").forEach((p) => p.classList.toggle("active", p.dataset.swatch === ""));
       renderGrid();
     };
