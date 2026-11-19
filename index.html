@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Swap &amp; Shop Club | Clothing Catalog</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23345c44'/%3E%3Cpath d='M8 12h14l-3-3M24 20H10l3 3' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 7h13l-3-3" />
+            <path d="M20 17H7l3 3" />
+          </svg>
+        </div>
+        <div>
+          <div class="brand-kicker">Swap &amp; Shop Club</div>
+          <h1 class="brand-title">Community Clothing Catalog</h1>
+        </div>
+      </div>
+
+      <div class="header-meta">
+        <div class="stats-strip" aria-label="Catalog counts">
+          <div class="stat-pill">
+            <span class="stat-value" id="stat-available">0</span>
+            <span class="stat-label">Available</span>
+          </div>
+          <div class="stat-pill stat-pill-terracotta">
+            <span class="stat-value" id="stat-upcycle">0</span>
+            <span class="stat-label">Upcycle Picks</span>
+          </div>
+          <div class="stat-pill stat-pill-mustard">
+            <span class="stat-value" id="stat-claimed">0</span>
+            <span class="stat-label">In Upcycling</span>
+          </div>
+        </div>
+        <div class="sync-badge" id="sync-status" title="Inventory data status">
+          <span class="sync-dot"></span>
+          <span id="sync-status-text">Loading catalog...</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="mode-tabs" role="tablist" aria-label="Catalog views">
+      <button class="mode-tab active" role="tab" aria-selected="true" data-mode="shop">
+        <span class="tab-title">Shop Available</span>
+        <span class="tab-count" id="tab-count-shop">0</span>
+      </button>
+      <button class="mode-tab" role="tab" aria-selected="false" data-mode="upcycle">
+        <span class="tab-title">Upcycle Studio</span>
+        <span class="tab-count" id="tab-count-upcycle">0</span>
+      </button>
+      <button class="mode-tab" role="tab" aria-selected="false" data-mode="claimed">
+        <span class="tab-title">Claimed &amp; In Progress</span>
+        <span class="tab-count" id="tab-count-claimed">0</span>
+      </button>
+    </nav>
+
+    <section class="mode-banner" id="mode-banner">
+      <p id="mode-banner-text">
+        Browse donated and student-upcycled pieces. Prices shown as "Est." are suggested pocket-money ranges until finalized. Click any piece to reserve or ask about it.
+      </p>
+    </section>
+
+    <section class="filter-bar" aria-label="Search and filter clothes">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input type="search" id="search-input" placeholder="Search by style, color, brand, or ID (e.g. TOP-014)..." autocomplete="off" />
+      </div>
+
+      <div class="filter-selects">
+        <select id="filter-category" aria-label="Filter by category">
+          <option value="">All Categories</option>
+        </select>
+        <select id="filter-color" aria-label="Filter by color">
+          <option value="">All Colors</option>
+        </select>
+        <select id="filter-condition" aria-label="Filter by condition">
+          <option value="">All Conditions</option>
+        </select>
+        <select id="filter-size" aria-label="Filter by size">
+          <option value="">All Sizes</option>
+        </select>
+        <button type="button" class="btn-reset" id="btn-reset-filters" hidden>Clear</button>
+      </div>
+    </section>
+
+    <div class="results-bar">
+      <span id="results-count">Showing 0 items</span>
+      <label class="sort-wrap">
+        <span>Sort:</span>
+        <select id="sort-select" aria-label="Sort items">
+          <option value="featured">Upcycled &amp; Newest First</option>
+          <option value="id-asc">Item ID (A to Z)</option>
+          <option value="id-desc">Item ID (Z to A)</option>
+          <option value="color">Color (A to Z)</option>
+        </select>
+      </label>
+    </div>
+
+    <main id="catalog-grid" class="catalog-grid" aria-live="polite"></main>
+
+    <div id="empty-state" class="empty-state" hidden>
+      <h3>No clothes match those filters</h3>
+      <p>Try clearing a filter or switching tabs to explore more pieces.</p>
+      <button type="button" class="btn btn-primary" id="btn-empty-reset">Reset Filters</button>
+    </div>
+  </div>
+
+  <!-- Item Detail & Reserve / Upcycle Modal -->
+  <div id="item-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <button type="button" class="modal-close" id="modal-close" aria-label="Close item details">&times;</button>
+
+      <div class="modal-layout">
+        <div class="modal-media">
+          <img id="modal-img" src="" alt="" />
+          <div class="modal-media-badges" id="modal-badges"></div>
+        </div>
+
+        <div class="modal-body">
+          <div class="modal-top-meta">
+            <span class="item-id-chip" id="modal-id">TOP-001</span>
+            <button type="button" class="btn-copy-id" id="btn-copy-id">Copy ID</button>
+          </div>
+
+          <h2 id="modal-title" class="modal-title"></h2>
+          <div class="modal-price-row" id="modal-price-row"></div>
+
+          <dl class="spec-grid" id="modal-specs"></dl>
+
+          <div class="upcycle-box" id="modal-upcycle-box" hidden>
+            <div class="upcycle-box-label">Upcycle Design Notes</div>
+            <p id="modal-upcycle-notes"></p>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="modal-actions" id="modal-action-buttons"></div>
+
+          <!-- Inline Form (active when APPS_SCRIPT_URL is configured) -->
+          <form id="inline-request-form" class="inline-form" hidden>
+            <div class="inline-form-header">
+              <strong id="inline-form-title">Reserve / Ask about this item</strong>
+              <button type="button" class="btn-link" id="inline-form-cancel">Cancel</button>
+            </div>
+            <input type="hidden" id="form-action-type" value="reserve" />
+            <label>
+              <span>Your Name *</span>
+              <input type="text" id="form-name" required placeholder="e.g., Maya Chan" />
+            </label>
+            <label>
+              <span>Email or Year Group *</span>
+              <input type="text" id="form-contact" required placeholder="e.g., Y10 or name@dc.edu.hk" />
+            </label>
+            <label>
+              <span id="form-notes-label">Question or Pickup Note</span>
+              <textarea id="form-notes" rows="3" placeholder="Ask about sizing, pickup time, or share your upcycling plan..."></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary btn-full" id="form-submit-btn">Submit Request</button>
+            <p class="form-feedback" id="form-feedback" hidden></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
