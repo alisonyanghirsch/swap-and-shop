@@ -47,6 +47,7 @@
     modalUpcycleNotes: document.getElementById("modal-upcycle-notes"),
     modalActions: document.getElementById("modal-action-buttons"),
     copyIdBtn: document.getElementById("btn-copy-id"),
+    shareLinkBtn: document.getElementById("btn-share-link"),
     inlineForm: document.getElementById("inline-request-form"),
     inlineFormTitle: document.getElementById("inline-form-title"),
     inlineFormCancel: document.getElementById("inline-form-cancel"),
@@ -603,6 +604,19 @@
       }
     });
 
+    els.shareLinkBtn.addEventListener("click", async () => {
+      if (!state.activeItem) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set("item", state.activeItem.itemId);
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        els.shareLinkBtn.textContent = "Link copied!";
+        setTimeout(() => { els.shareLinkBtn.textContent = "Copy Link"; }, 1500);
+      } catch (_) {
+        els.shareLinkBtn.textContent = "Copy failed";
+      }
+    });
+
     els.modalActions.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-inline-action]");
       if (!btn) return;
@@ -663,6 +677,11 @@
   async function init() {
     bindEvents();
     await loadLocalSnapshot();
+    const deepLinkId = new URLSearchParams(window.location.search).get("item");
+    if (deepLinkId) {
+      const target = state.items.find((it) => (it.itemId || "").toUpperCase() === deepLinkId.toUpperCase());
+      if (target) openModal(target);
+    }
     tryLiveSync();
   }
 
