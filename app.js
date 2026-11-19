@@ -58,7 +58,6 @@
     modalUpcycleBox: document.getElementById("modal-upcycle-box"),
     modalUpcycleNotes: document.getElementById("modal-upcycle-notes"),
     modalActions: document.getElementById("modal-action-buttons"),
-    copyIdBtn: document.getElementById("btn-copy-id"),
     shareLinkBtn: document.getElementById("btn-share-link"),
     zoomBtn: document.getElementById("btn-zoom-photo"),
     beforeAfterBar: document.getElementById("before-after-bar"),
@@ -341,7 +340,7 @@
     els.modalImg.alt = item.description || item.itemId;
     els.modalId.textContent = item.itemId;
     els.modalTitle.textContent = item.description;
-    els.copyIdBtn.textContent = "Copy ID";
+    if (els.shareLinkBtn) els.shareLinkBtn.textContent = "Share item";
 
     // Before / After toggle when an upcycled piece has a brand-new photo
     const snap = state.snapshotById.get(item.itemId);
@@ -371,21 +370,21 @@
     `;
 
     const specs = [
-      ["Category", item.category || "Tops"],
-      ["Color", item.color || "Not listed"],
-      ["Size", item.size || "Ask / Check rack"],
-      ["Condition", item.condition || "Good"],
-      ["Material", item.material || "Not listed"],
-      ["Brand", item.brand || "Unbranded / Tag not shown"],
+      ["Category", item.category || "Tops", !item.category],
+      ["Color", item.color || "Not listed", !item.color],
+      ["Size", item.size || "Check rack / Ask", !item.size],
+      ["Condition", item.condition || "Good", !item.condition],
+      ["Material", item.material || "Not listed", !item.material],
+      ["Brand", item.brand || "Not shown on tag", !item.brand],
     ];
     if (item.assignedDesigner) {
-      specs.push(["Assigned Designer", item.assignedDesigner]);
+      specs.push(["Assigned Designer", item.assignedDesigner, false]);
     }
 
-    els.modalSpecs.innerHTML = specs.map(([k, v]) => `
+    els.modalSpecs.innerHTML = specs.map(([k, v, isPlaceholder]) => `
       <div class="spec-item">
         <dt>${escapeHtml(k)}</dt>
-        <dd>${escapeHtml(v)}</dd>
+        <dd class="${isPlaceholder ? "is-placeholder" : ""}">${escapeHtml(v)}</dd>
       </div>
     `).join("");
 
@@ -673,29 +672,20 @@
       els.modalImg.src = btn.dataset.ba === "before" && snap ? `./${snap.localImage}` : resolveImageUrl(state.activeItem);
     });
 
-    els.copyIdBtn.addEventListener("click", async () => {
-      if (!state.activeItem) return;
-      try {
-        await navigator.clipboard.writeText(state.activeItem.itemId);
-        els.copyIdBtn.textContent = "Copied!";
-        setTimeout(() => { els.copyIdBtn.textContent = "Copy ID"; }, 1500);
-      } catch (_) {
-        els.copyIdBtn.textContent = state.activeItem.itemId;
-      }
-    });
-
-    els.shareLinkBtn.addEventListener("click", async () => {
-      if (!state.activeItem) return;
-      const url = new URL(window.location.href);
-      url.searchParams.set("item", state.activeItem.itemId);
-      try {
-        await navigator.clipboard.writeText(url.toString());
-        els.shareLinkBtn.textContent = "Link copied!";
-        setTimeout(() => { els.shareLinkBtn.textContent = "Copy Link"; }, 1500);
-      } catch (_) {
-        els.shareLinkBtn.textContent = "Copy failed";
-      }
-    });
+    if (els.shareLinkBtn) {
+      els.shareLinkBtn.addEventListener("click", async () => {
+        if (!state.activeItem) return;
+        const url = new URL(window.location.href);
+        url.searchParams.set("item", state.activeItem.itemId);
+        try {
+          await navigator.clipboard.writeText(url.toString());
+          els.shareLinkBtn.textContent = "Link copied!";
+          setTimeout(() => { els.shareLinkBtn.textContent = "Share item"; }, 1500);
+        } catch (_) {
+          els.shareLinkBtn.textContent = "Copy failed";
+        }
+      });
+    }
 
     els.modalActions.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-inline-action]");
