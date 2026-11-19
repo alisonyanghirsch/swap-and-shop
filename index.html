@@ -95,6 +95,18 @@
       </div>
     </section>
 
+    <div class="swatch-bar" id="swatch-bar" aria-label="Quick color filter">
+      <button type="button" class="swatch-pill active" data-swatch="">All</button>
+      <button type="button" class="swatch-pill" data-swatch="black"><span class="swatch-dot" style="background:#23201d"></span>Black</button>
+      <button type="button" class="swatch-pill" data-swatch="light"><span class="swatch-dot" style="background:#f5f0e4;border:1px solid #ccc6b9"></span>White &amp; Cream</button>
+      <button type="button" class="swatch-pill" data-swatch="grey"><span class="swatch-dot" style="background:#8c8f94"></span>Grey</button>
+      <button type="button" class="swatch-pill" data-swatch="blue"><span class="swatch-dot" style="background:#31547c"></span>Blue &amp; Navy</button>
+      <button type="button" class="swatch-pill" data-swatch="green"><span class="swatch-dot" style="background:#4f7a5c"></span>Green &amp; Sage</button>
+      <button type="button" class="swatch-pill" data-swatch="pink"><span class="swatch-dot" style="background:#cf6a7c"></span>Pink &amp; Red</button>
+      <button type="button" class="swatch-pill" data-swatch="warm"><span class="swatch-dot" style="background:#c99238"></span>Mustard &amp; Warm</button>
+      <button type="button" class="swatch-pill" data-swatch="multi"><span class="swatch-dot" style="background:linear-gradient(135deg,#31547c 50%,#cf6a7c 50%)"></span>Striped &amp; Multi</button>
+    </div>
+
     <div class="results-bar">
       <span id="results-count">Showing 0 items</span>
       <label class="sort-wrap">
@@ -124,8 +136,13 @@
 
       <div class="modal-layout">
         <div class="modal-media">
-          <img id="modal-img" src="" alt="" />
+          <img id="modal-img" src="" alt="" title="Click to zoom" />
           <div class="modal-media-badges" id="modal-badges"></div>
+          <button type="button" class="btn-zoom-photo" id="btn-zoom-photo" aria-label="Zoom photo">Zoom</button>
+          <div class="before-after-bar" id="before-after-bar" hidden>
+            <button type="button" class="ba-btn active" data-ba="after">After (Upcycled)</button>
+            <button type="button" class="ba-btn" data-ba="before">Before (Original)</button>
+          </div>
         </div>
 
         <div class="modal-body">
@@ -173,6 +190,12 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Photo Zoom Lightbox -->
+  <div id="photo-lightbox" class="lightbox-backdrop" hidden role="dialog" aria-modal="true" aria-label="Zoomed garment photo">
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close zoom">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
   </div>
 
   <script src="./config.js"></script>

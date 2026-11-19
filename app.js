@@ -7,10 +7,22 @@
     search: "",
     category: "",
     color: "",
+    swatch: "",
     condition: "",
     size: "",
     sort: "featured",
     activeItem: null,
+  };
+
+  const SWATCH_GROUPS = {
+    black: ["black"],
+    light: ["white", "cream"],
+    grey: ["grey", "gray"],
+    blue: ["blue", "light blue", "navy"],
+    green: ["green", "sage"],
+    pink: ["pink", "red", "purple"],
+    warm: ["mustard", "orange", "beige", "brown"],
+    multi: ["striped", "multi"],
   };
 
   const els = {
@@ -48,6 +60,12 @@
     modalActions: document.getElementById("modal-action-buttons"),
     copyIdBtn: document.getElementById("btn-copy-id"),
     shareLinkBtn: document.getElementById("btn-share-link"),
+    zoomBtn: document.getElementById("btn-zoom-photo"),
+    beforeAfterBar: document.getElementById("before-after-bar"),
+    lightbox: document.getElementById("photo-lightbox"),
+    lightboxImg: document.getElementById("lightbox-img"),
+    lightboxClose: document.getElementById("lightbox-close"),
+    swatchBar: document.getElementById("swatch-bar"),
     inlineForm: document.getElementById("inline-request-form"),
     inlineFormTitle: document.getElementById("inline-form-title"),
     inlineFormCancel: document.getElementById("inline-form-cancel"),
@@ -189,6 +207,10 @@
 
       if (state.category && item.category !== state.category) return false;
       if (state.color && item.color !== state.color) return false;
+      if (state.swatch) {
+        const allowed = SWATCH_GROUPS[state.swatch] || [];
+        if (!allowed.includes((item.color || "").toLowerCase())) return false;
+      }
       if (state.condition && item.condition !== state.condition) return false;
       if (state.size && item.size !== state.size) return false;
 
@@ -247,7 +269,7 @@
 
   function renderGrid() {
     const items = getFilteredItems();
-    const hasFilters = Boolean(state.search || state.category || state.color || state.condition || state.size);
+    const hasFilters = Boolean(state.search || state.category || state.color || state.swatch || state.condition || state.size);
     els.resetBtn.hidden = !hasFilters;
     els.resultsCount.textContent = `Showing ${items.length} ${items.length === 1 ? "item" : "items"}`;
 
@@ -314,11 +336,25 @@
 
   function openModal(item) {
     state.activeItem = item;
-    els.modalImg.src = resolveImageUrl(item);
+    const currentImg = resolveImageUrl(item);
+    els.modalImg.src = currentImg;
     els.modalImg.alt = item.description || item.itemId;
     els.modalId.textContent = item.itemId;
     els.modalTitle.textContent = item.description;
     els.copyIdBtn.textContent = "Copy ID";
+
+    // Before / After toggle when an upcycled piece has a brand-new photo
+    const snap = state.snapshotById.get(item.itemId);
+    const liveDriveId = extractDriveFileId(item.garmentPhotoLink);
+    const hasNewUpcyclePhoto = Boolean(
+      isUpcycledReady(item) && snap && snap.localImage && liveDriveId && snap.originalDriveFileId && liveDriveId !== snap.originalDriveFileId
+    );
+    els.beforeAfterBar.hidden = !hasNewUpcyclePhoto;
+    if (hasNewUpcyclePhoto) {
+      els.beforeAfterBar.querySelectorAll(".ba-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.ba === "after");
+      });
+    }
 
     const badges = [];
     if (isUpcycledReady(item)) {
@@ -539,6 +575,21 @@
     });
     els.color.addEventListener("change", (e) => {
       state.color = e.target.value;
+      if (state.color) {
+        state.swatch = "";
+        els.swatchBar.querySelectorAll(".swatch-pill").forEach((p) => p.classList.toggle("active", p.dataset.swatch === ""));
+      }
+      renderGrid();
+    });
+    els.swatchBar.addEventListener("click", (e) => {
+      const pill = e.target.closest(".swatch-pill");
+      if (!pill) return;
+      state.swatch = pill.dataset.swatch;
+      if (state.swatch) {
+        state.color = "";
+        els.color.value = "";
+      }
+      els.swatchBar.querySelectorAll(".swatch-pill").forEach((p) => p.classList.toggle("active", p === pill));
       renderGrid();
     });
     els.condition.addEventListener("change", (e) => {
@@ -558,6 +609,7 @@
       state.search = "";
       state.category = "";
       state.color = "";
+      state.swatch = "";
       state.condition = "";
       state.size = "";
       els.search.value = "";
@@ -565,6 +617,7 @@
       els.color.value = "";
       els.condition.value = "";
       els.size.value = "";
+      els.swatchBar.querySelectorAll(".swatch-pill").forEach((p) => p.classList.toggle("active", p.dataset.swatch === ""));
       renderGrid();
     };
     els.resetBtn.addEventListener("click", resetFilters);
@@ -590,7 +643,34 @@
       if (e.target === els.modal) closeModal();
     });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !els.modal.hidden) closeModal();
+      if (e.key === "Escape") {
+        if (!els.lightbox.hidden) {
+          els.lightbox.hidden = true;
+        } else if (!els.modal.hidden) {
+          closeModal();
+        }
+      }
+    });
+
+    const openLightbox = () => {
+      if (!els.modalImg.src) return;
+      els.lightboxImg.src = els.modalImg.src;
+      els.lightboxImg.alt = els.modalImg.alt;
+      els.lightbox.hidden = false;
+    };
+    els.modalImg.addEventListener("click", openLightbox);
+    els.zoomBtn.addEventListener("click", openLightbox);
+    els.lightboxClose.addEventListener("click", () => { els.lightbox.hidden = true; });
+    els.lightbox.addEventListener("click", (e) => {
+      if (e.target === els.lightbox || e.target === els.lightboxImg) els.lightbox.hidden = true;
+    });
+
+    els.beforeAfterBar.addEventListener("click", (e) => {
+      const btn = e.target.closest(".ba-btn");
+      if (!btn || !state.activeItem) return;
+      const snap = state.snapshotById.get(state.activeItem.itemId);
+      els.beforeAfterBar.querySelectorAll(".ba-btn").forEach((b) => b.classList.toggle("active", b === btn));
+      els.modalImg.src = btn.dataset.ba === "before" && snap ? `./${snap.localImage}` : resolveImageUrl(state.activeItem);
     });
 
     els.copyIdBtn.addEventListener("click", async () => {
