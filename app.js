@@ -274,7 +274,7 @@
     els.modeBanner.classList.toggle("is-upcycle", isUpcycle);
     if (state.mode === "shop") {
       els.modeBannerText.textContent =
-        "Student-run thrift drop. Pocket-money prices shown below are suggested ranges until finalized. Tap any piece to zoom in, reserve, or ask about sizing.";
+        "Student-run thrift drop. Tap any piece to zoom in, reserve, or ask about sizing.";
     } else if (state.mode === "upcycle") {
       els.modeBannerText.textContent =
         "Upcycle Studio: browse blanks and statement bases, check the redesign ideas, and tap \"Claim for Upcycle\" to reserve a piece for your project.";
@@ -383,8 +383,7 @@
 
     const price = formatPrice(item);
     els.modalPriceRow.innerHTML = `
-      <span class="price-tag ${price.isEstimated ? "is-est" : ""}" style="font-size:1.1rem;">${escapeHtml(price.text)}</span>
-      ${price.isEstimated ? '<span class="meta-chip">Suggested pocket-money range</span>' : '<span class="meta-chip">Final price</span>'}
+      <span class="price-tag ${price.isEstimated ? "is-est" : ""}" style="font-size:1.15rem;">${escapeHtml(price.text)}</span>
     `;
 
     const specs = [
