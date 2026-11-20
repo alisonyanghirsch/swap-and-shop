@@ -14,7 +14,7 @@ window.SWAP_SHOP_CONFIG = {
   SHEET_ID: "14TtFI4EcqZlrT9Wf-RGkicHDps_yOkrXuNCwiEgmogs",
   SHEET_TAB: "Inventory",
   ENABLE_PUBLIC_SHEET_SYNC: false,
-  APPS_SCRIPT_URL: "",
+  APPS_SCRIPT_URL: "https://script.google.com/a/macros/dc.edu.hk/s/AKfycbwwDQJmqMm7uMc4eW7avvx5jLood7Rcdjm5uIwjHPsTcTxmaopeosqeG6MkVnIc-Dpu/exec",
   GOOGLE_FORM: {
     baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeyjJBug2Bit2sxt_UNAFuddrBCll9gfK5UZXsg9AZzrr5WBA/viewform",
     entryItemId: "entry.1081046035",

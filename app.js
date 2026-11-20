@@ -497,7 +497,8 @@
     // 1. Prefer Apps Script Web App API if configured
     if (CFG.APPS_SCRIPT_URL) {
       try {
-        const res = await fetch(CFG.APPS_SCRIPT_URL, { cache: "no-store" });
+        const apiUrl = CFG.APPS_SCRIPT_URL + (CFG.APPS_SCRIPT_URL.includes("?") ? "&api=1" : "?api=1");
+        const res = await fetch(apiUrl, { cache: "no-store" });
         const data = await res.json();
         if (data && data.ok && Array.isArray(data.items) && data.items.length > 0) {
           state.items = data.items;
