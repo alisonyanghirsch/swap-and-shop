@@ -95,8 +95,8 @@
     if (liveDriveId && snap && snap.originalDriveFileId && liveDriveId !== snap.originalDriveFileId) {
       return `https://drive.google.com/thumbnail?id=${liveDriveId}&sz=w900`;
     }
-    if (item.localImage) return `./${item.localImage}?v=20261125`;
-    if (snap && snap.localImage) return `./${snap.localImage}?v=20261125`;
+    if (item.localImage) return `./${item.localImage}?v=20261125b`;
+    if (snap && snap.localImage) return `./${snap.localImage}?v=20261125b`;
     if (liveDriveId) return `https://drive.google.com/thumbnail?id=${liveDriveId}&sz=w900`;
     return "";
   }
