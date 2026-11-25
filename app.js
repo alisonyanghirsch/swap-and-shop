@@ -157,15 +157,17 @@
 
   function matchesStyle(item, styleKey) {
     if (!styleKey) return true;
+    const cat = (item.category || "").toLowerCase();
     const desc = (item.description || "").toLowerCase();
     const mat = (item.material || "").toLowerCase();
     const brand = (item.brand || "").trim();
+    const isBottom = cat === "bottoms" || /\b(skirt|shorts|pants|trousers|jeans)\b/.test(desc);
     if (styleKey === "branded") return Boolean(brand) && !brand.toLowerCase().includes("(est.)");
-    if (styleKey === "graphic") return /graphic|print|logo|crest|script|butterfly|snoopy|dog|goose|wave|cat|research|alfa|champion|storefront|feather|palm/.test(desc);
-    if (styleKey === "knit") return /sweater|knit|waffle|henley|hoodie|vest/.test(desc) || /knit/.test(mat);
-    if (styleKey === "tank") return /tank|camisole|sleeveless|racerback|halter|bandeau|bustier|bralette|tube/.test(desc);
-    if (styleKey === "shirt") return /button|blouse|dress shirt|collared|plaid|mandarin/.test(desc) && !/skirt|shorts/.test(desc);
-    if (styleKey === "polo") return /polo/.test(desc);
+    if (styleKey === "graphic") return !isBottom && !/blouse|camisole|bustier|bandeau|halter/.test(desc) && /graphic|print|logo|crest|script|butterfly|snoopy|dog|goose|wave|cat|research|alfa|champion|storefront|feather|palm/.test(desc);
+    if (styleKey === "knit") return !isBottom && (/sweater|knit|waffle|henley|hoodie|vest/.test(desc) || /knit/.test(mat));
+    if (styleKey === "tank") return !isBottom && /tank|camisole|sleeveless|racerback|halter|bandeau|bustier|bralette|tube/.test(desc);
+    if (styleKey === "shirt") return !isBottom && /button|blouse|dress shirt|collared|plaid|mandarin/.test(desc);
+    if (styleKey === "polo") return !isBottom && /polo/.test(desc);
     if (styleKey === "shorts") return /\bshorts\b/.test(desc);
     if (styleKey === "skirt") return /\bskirt\b/.test(desc);
     return true;
