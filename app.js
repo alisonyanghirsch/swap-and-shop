@@ -162,10 +162,12 @@
     const brand = (item.brand || "").trim();
     if (styleKey === "branded") return Boolean(brand) && !brand.toLowerCase().includes("(est.)");
     if (styleKey === "graphic") return /graphic|print|logo|crest|script|butterfly|snoopy|dog|goose|wave|cat|research|alfa|champion|storefront|feather|palm/.test(desc);
-    if (styleKey === "knit") return /sweater|knit|waffle|henley/.test(desc) || /knit/.test(mat);
-    if (styleKey === "tank") return /tank|camisole|sleeveless|racerback/.test(desc);
-    if (styleKey === "shirt") return /button|blouse|dress shirt|collared|plaid|mandarin/.test(desc);
+    if (styleKey === "knit") return /sweater|knit|waffle|henley|hoodie|vest/.test(desc) || /knit/.test(mat);
+    if (styleKey === "tank") return /tank|camisole|sleeveless|racerback|halter|bandeau|bustier|bralette|tube/.test(desc);
+    if (styleKey === "shirt") return /button|blouse|dress shirt|collared|plaid|mandarin/.test(desc) && !/skirt|shorts/.test(desc);
     if (styleKey === "polo") return /polo/.test(desc);
+    if (styleKey === "shorts") return /\bshorts\b/.test(desc);
+    if (styleKey === "skirt") return /\bskirt\b/.test(desc);
     return true;
   }
 
